@@ -39,7 +39,8 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   const supabase = await createClient();
   if (!supabase) return { error: MISSING_ENV_MESSAGE, email };
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  // Trim stray spaces/line breaks and any trailing slash pasted into the setting.
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim().replace(/\/+$/, "");
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
