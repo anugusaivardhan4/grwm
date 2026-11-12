@@ -8,7 +8,9 @@ What's built so far:
 
 - **Home page** (`/`): branding plus **Sign up** and **Log in** buttons
 - **Sign up** (`/signup`) and **Log in** (`/login`) with email and password
-- **My wardrobe** (`/wardrobe`) and **Outfit** (`/outfit`): empty pages, only for logged-in users
+- **My wardrobe** (`/wardrobe`): add clothes with a photo, name, category, colour and season; filter by category; remove items
+- **Outfit** (`/outfit`): empty for now
+- Only logged-in users can see these pages, and everyone sees only their own clothes
 - Light and dark mode (follows your device; the moon/sun button switches it)
 
 ---
@@ -93,6 +95,24 @@ New sign-ups are then logged in straight away. Turn it back on before you go liv
 
 > Supabase's built-in email service only sends a few emails per hour. That's fine for testing; for a real launch, set up your own email provider under **Authentication → Emails → SMTP Settings**.
 
+### f) Set up the wardrobe (one time)
+
+The wardrobe needs a table for your clothes and a private folder for photos. One script sets up both:
+
+1. In the Supabase dashboard, open **SQL Editor** (left menu).
+2. Click **New query**.
+3. Open [`supabase/migrations/001_wardrobe.sql`](supabase/migrations/001_wardrobe.sql) in this project, copy **all** of it, and paste it in.
+4. Click **Run**. You should see "Success. No rows returned".
+
+That's it. You can check it worked under **Table Editor → wardrobe_items** and **Storage → wardrobe**.
+
+What the script does, in plain words:
+- Creates a `wardrobe_items` table (name, category, colour, season, photo).
+- Turns on **Row Level Security**, so each person can only see, add and delete their own clothes.
+- Creates a **private** `wardrobe` photo bucket (images only, max 5 MB). Each person's photos go in their own folder, and nobody else can open them.
+
+It's safe to run the script again; it skips anything that already exists.
+
 ---
 
 ## 3. Going live later (e.g. on Vercel)
@@ -109,6 +129,7 @@ New sign-ups are then logged in straight away. Turn it back on before you go liv
 | "Supabase isn't connected yet" | `.env.local` is missing, misnamed, or empty. Fix it, then restart `npm run dev`. |
 | "Check your inbox and confirm your email first" | Click the link in the confirmation email (check spam), or turn off **Confirm email** (see above). |
 | Confirmation link says it didn't work | Open the link in the same browser you signed up in, and make sure step 2d is done. Links expire after a while; sign up again for a fresh one. |
+| Wardrobe says "One quick setup step" | Run the SQL script from step 2f, then refresh the page. |
 | Not getting emails | Supabase's built-in email is rate-limited. Wait a bit, or turn off **Confirm email** while testing. |
 
 ---
@@ -121,11 +142,14 @@ src/
     page.tsx                 Home page
     (auth)/login, signup     Log-in and sign-up pages
     (auth)/actions.ts        Sign up / log in / log out (talks to Supabase)
-    (app)/wardrobe, outfit   Logged-in pages
+    (app)/wardrobe           My wardrobe (list, add item, delete)
+    (app)/outfit             Outfit page
     auth/confirm/route.ts    Handles the link in the confirmation email
     globals.css              Brand colours and light/dark theme
   lib/supabase/              Supabase connection helpers
   lib/auth.ts                Checks who is logged in
+  lib/wardrobe.ts            Loads your clothes from Supabase
+supabase/migrations/         SQL to run in Supabase (tables, storage, security rules)
   proxy.ts                   Keeps the login fresh; sends logged-out visitors to /login
 ```
 
