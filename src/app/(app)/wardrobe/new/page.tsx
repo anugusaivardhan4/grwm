@@ -11,7 +11,7 @@ export default function NewItemPage() {
         ← Back to my wardrobe
       </Link>
       <h1 className="mt-3 font-display text-4xl font-bold">Add a piece</h1>
-      <p className="mb-8 mt-2 text-muted">Snap it, name it, and it&apos;s in your closet. Easy.</p>
+      <p className="mb-8 mt-2 text-muted">Snap a photo and our AI does the rest.</p>
       <AddItemForm />
     </>
   );
